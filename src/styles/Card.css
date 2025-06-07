@@ -1,0 +1,11 @@
+.card-container {
+  perspective: 1000px;
+}
+
+.card-image {
+    width: 70%;
+    height: 60%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}

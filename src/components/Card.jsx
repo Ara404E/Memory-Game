@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
+import '../styles/Card.css'
 
   const gifIds = [
     "p0ydOvZ6xm8PMe5qlr", // Larry 1
@@ -23,25 +24,58 @@ import { useEffect, useState } from "react";
         return newArray
   }
 
-    
+    // checks if the ids are valid
   const validIds = gifIds.filter(Boolean)
   
 
 
-  function Card({API_KEY}) {
+  function Card({GIPHY_API, API_KEY}) {
     const [cards, setCards] = useState([]);
     const [loading, setLoading] = useState(true); 
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(null);   
+    const [transform, setTransform] = useState('')
+    const cardRef = useRef(null)
   
-  
+    const handleMouseMove = (e) =>{
+      if(!cardRef.current) return;
+
+      const card = cardRef.current
+      const rect = card.getBoundingClientRect()
+
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+
+
+      const centerX = rect.width / 2
+      const centerY = rect.height / 2
+
+      const relX = (x - centerX) / centerX
+      const relY = (y - centerY) / centerY
+
+      const tiltX = relY * 5
+      const tiltY = relX * -5
+
+      const originX = relX > 0 ? "left" : "right"
+      const originY = relY > 0 ? "top" : "bottom"
+
+      setTransform(`
+        roatetX(${tiltX}deg)
+        roatetY(${tiltY}deg)
+        `)
+
+        card.style.transformOrigin = `${originX} ${originY}`
+    }
+
+    const handleMouseLeave = () =>{
+      setTransform('')
+    }
+
     useEffect(() => {
       const fetchGifs = async () => {
         try {
           const idsString = validIds.join(",");
-          const response = await fetch(`https://api.giphy.com/v1/gifs?ids=${idsString}&api_key=${API_KEY}`);
-          const result = await response.json();
-    
-          const images = result.data.map(gif => gif.images.original.url);
+          const response = await axios.get(`${GIPHY_API}?ids=${idsString}&api_key=${API_KEY}`);    
+          const images = response.data.data.map(gif => gif.images.original.url)
     
           // const shuffledImages = shuffleArray(images)
           setCards(images);
@@ -59,21 +93,28 @@ import { useEffect, useState } from "react";
       return () =>{
         setLoading(true)
       }
-    }, [API_KEY]);
+    }, [GIPHY_API,API_KEY]);
   
       if (loading) return <p>Loading...</p>;
       if (error) return <p>Error: {error}</p>;
     
     return (
-      <div className="card-div">
-        <div className="card">
-          
+      <div 
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="grid grid-cols-3 card-container">
           {
           cards.map((url, index) => (
-            <img key={index} src={url} alt={`card-${index}`}/> 
+            <img key={index}
+            src={url}
+            alt={`card-${index}`}
+            className="
+            rounded-lg border-4 border-black card-image"
+            style={transform}
+            /> 
           ))}
         </div>
-      </div>
     );
   }
   
