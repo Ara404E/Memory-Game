@@ -8,6 +8,10 @@ export const useGifs = (GIPHY_API, API_KEY, gifIds) => {
   const [error, setError] = useState(null);
 
     useEffect(() => {
+        if(!API_KEY || !GIPHY_API || !gifIds.length) {
+            setError("Missing required data")
+                setLoading(false)
+        }
         const fetchGifs = async () => {
             try {
                 const idToString = gifIds.join(',')
@@ -19,10 +23,13 @@ export const useGifs = (GIPHY_API, API_KEY, gifIds) => {
                 setError(error)
         
             } finally{
-                setLoading(false)
+                setTimeout(() => setLoading(false), 2000 )
             }
         }
         fetchGifs()
     },[GIPHY_API,API_KEY,gifIds])
+
     return { cards , loading , error }
 }
+
+export default useGifs

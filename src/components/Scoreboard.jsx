@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { Box, Modal, Typography } from "@mui/material"
 
-function ScoreBoard(){
-    
+const Scoreboard = ({score}) => {
 }
+
+
+export default Scoreboard

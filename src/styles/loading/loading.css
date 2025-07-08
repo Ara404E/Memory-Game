@@ -1,0 +1,12 @@
+/* Loading.css */
+.custom-progress {
+  height: 12px;
+  border-radius: 8px;
+  background-color: #ffe2e2; /* progress track */
+
+  /* this selects the actual animated bar */
+  .MuiLinearProgress-bar {
+    background-color: #FF2E63 !important;
+    border-radius: 6px;
+  }
+}
